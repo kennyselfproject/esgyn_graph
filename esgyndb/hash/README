@@ -1,0 +1,8 @@
+# hash table structure
+
+* the struct:<br/>
+<p align="center">
+<a href="http://172.16.20.11:1215/xiaozhong.wang/esgyn_graph/blob/master/esgyndb/hash/hash.dot.png" target="_blank">
+<img align="center" src="http://172.16.20.11:1215/xiaozhong.wang/esgyn_graph/blob/master/esgyndb/hash/hash.dot.png" alt="Geolife data at block scale"></a><br/><br/>
+</p>
+

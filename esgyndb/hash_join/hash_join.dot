@@ -1,0 +1,30 @@
+digraph G {
+  nodesep=.05;
+  fontsize=20;
+  rankdir=LR;
+  node [shape=record,width=.1,height=.1];
+  
+  subgraph cluster_HashJoin {
+    node [style=filled];
+    label = "HashJoin";
+    HashJoin [fontsize=12, label=" currCluster_ \n Cluster* | bucketCount_ | <buckets_> buckets_ \n Bucket* | <clusterDb_> clusterDb_ \n ClusterDB*", height=2.5];
+  }
+
+  subgraph cluster_ClusterDB {
+    node [style=filled];
+    label = "ClusterDB";
+    ClusterDB [fontsize=12, label=" <header_> | <buckets_> buckets_ \n Bucket* | <clusterToFlush_> clusterToFlush_ \n Cluster* | <clusterToProbe_> clusterToProbe_ \n Cluster* | <clusterToRead_> clusterToRead_ \n Cluster* | <clusterReturnRightRows_> clusterReturnRightRows_ \n Cluster* | <clusterList_> clusterList_ \n Cluster* | <tempFile_> tempFile_ \n HashScratchSpace | <outerReadBuffers_> outerReadBuffers_ \n HashBuffer* ", height=2.5];
+  }
+
+  subgraph cluster_Buckets {
+    node [style=filled];
+    label = "Buckets";
+    Buckets [fontsize=12, label=" {<header_> innerCluster\nCluster* | outerCluster\nCluster* | rowCount_ } | {<bucket0>||} | {<bucket1>||} | {<bucket2>||} | {<bucket3>||} | {<bucket4>||} | {<bucket5>||} | {<bucket6>||} | {<bucket7>||}| {<bucket8>||} | ... | {<bucketn2>||} | {<bucketn1>||} | {<bucketn>||}", height=2.5];
+  }
+
+  node [width = 1.5];
+
+  HashJoin:buckets_ -> Buckets:bucket0;
+  HashJoin:buckets_ -> ClusterDB:header_;
+  ClusterDB:buckets_ -> Buckets:bucket0;
+}

@@ -1,0 +1,92 @@
+digraph struct {
+  nodesep=.05;
+  rankdir=LR;
+  node [shape=record,width=.1,height=.1];
+
+  subgraph cluster_HashTable {
+    style=bold;
+    label = "HashTable";
+    node [style=filled];
+    color = blue;
+    HashTable [label = "hashTableOverflow_\n4 Bytes | noHashValueDups_\n4 Bytes | <last_>singleChainLastRow_\n8 Bytes | rowCount_\n4 Bytes | originalSize_\n4 Bytes | resizeThreshold_\n4 Bytes | headerCount_\n4 Bytes | <header_> header_\n8 Bytes",height=2.5];
+  }
+
+  subgraph cluster_HashTableHeaders {
+    node [style=filled];
+    label = "HashTableHeaders";
+    color = blue;
+    HashTableHeaders [label = "<item0> |<item1> HashRow* |<item2> |<item3> HashRow* |<item4> |<item5> |<item6> HashRow* | <item7>",height=2.5];
+  }
+
+  node [shape=plaintext, width=1.5];
+  subgraph cluster_HashRows {
+    label = "HashRows";
+    color = blue;
+    HashRow1 [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR>
+	  <TD  bgcolor="gray" PORT="header_">eye_<br/>4 Bytes</TD>
+	  <TD bgcolor="gray">hashValue_<br/>4 Bytes</TD>
+	  <TD bgcolor="gray" PORT="next_">next_<br/>8 Bytes</TD>
+	  <TD>data size<br/>4 Bytes</TD>
+	  <TD>data...<br/>n Bytes</TD>
+	</TR>
+      </TABLE>
+    >];
+
+    HashRow2 [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR>
+	  <TD bgcolor="gray" PORT="header_"></TD>
+	  <TD bgcolor="gray">small</TD>
+	  <TD bgcolor="gray" PORT="next_">next_<br/>8 Bytes</TD>
+	  <TD></TD>
+	  <TD></TD>
+	</TR>
+      </TABLE>
+    >];
+
+    HashRow3 [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR>
+	  <TD bgcolor="gray" PORT="header_"></TD>
+	  <TD bgcolor="gray"></TD>
+	  <TD bgcolor="gray" PORT="next_">null\n8 Bytes</TD>
+	  <TD></TD>
+	  <TD></TD>
+	</TR>
+      </TABLE>
+    >];
+
+    HashRow4 [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR>
+	  <TD  bgcolor="gray" PORT="header_"></TD>
+	  <TD bgcolor="gray">big</TD>
+	  <TD bgcolor="gray" PORT="next_">null\n8 Bytes</TD>
+	  <TD></TD>
+	  <TD></TD>
+	</TR>
+      </TABLE>
+    >];
+
+    HashRow5 [label=<
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR>
+	  <TD  bgcolor="gray" PORT="header_"></TD>
+	  <TD bgcolor="gray"></TD>
+	  <TD bgcolor="gray" PORT="next_">null\n8 Bytes</TD>
+	  <TD></TD>
+	  <TD></TD>
+	</TR>
+      </TABLE>
+    >];
+  }
+
+  HashTableHeaders:item1 -> HashRow1:header_;
+  HashTableHeaders:item3 -> HashRow2:header_;
+  HashTableHeaders:item6 -> HashRow3:header_;
+  HashRow2:next_ -> HashRow4:header_;
+  HashRow1:next_ -> HashRow5:header_;
+  HashTable:header_ -> HashTableHeaders:item7;
+}

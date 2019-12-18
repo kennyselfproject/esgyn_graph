@@ -1,0 +1,60 @@
+digraph G {
+  nodesep=.05;
+  rankdir=LR;
+  node [shape=record,width=.1,height=.1];
+  subgraph cluster_ClusterDB {
+    node [style=filled];
+    label = "ClusterDB";
+    ClusterDB [fontsize=12, label=" <header_> ... | <buckets_> buckets_ \n Bucket* | <clusterToFlush_> clusterToFlush_ \n Cluster* | <clusterToProbe_> clusterToProbe_ \n Cluster* | <clusterToRead_> clusterToRead_ \n Cluster* | <clusterReturnRightRows_> clusterReturnRightRows_ \n Cluster* | <clusterList_> clusterList_ \n Cluster* | <tempFile_> tempFile_ \n HashScratchSpace | <outerReadBuffers_> outerReadBuffers_ \n HashBuffer* | <ender_> ...", height=2.5];
+  }
+
+  subgraph cluster_Buckets {
+    node [style=filled];
+    label = "Buckets";
+    Buckets [width=2, label=" <header_> Bucket| <bucket1> Bucket | <bucket2> Bucket | <bucket3> Bucket | <bucket4> ...| ...| ...| ...| <bucketn3> Bucket | <bucketn2> Bucket | <bucketn1> Bucket | <bucketn> Bucket ", height=2.5];
+    Bucket [label=" <header_> innerCluster_\nCluster* | outerCluster_\nCluster* | <ender_> rowCount_"];
+  }
+
+  subgraph cluster_Clusters {
+    node [style=filled];
+    label = "Clusters";
+    Cluster1 [label = "<buckets_> buckets_ | <clusterDb_> clusterDb_\nClusterDB * | tempFile_\nHashScratchSpace | ... | <next_> next_\nCluster* | <hashTable_> hashTable_\nHashTable* | <bufferPool_> bufferPool_\nHashBuffer* | ...",height=2.5];
+    Clusterx [label = "<buckets_> ... | <clusterDb_> clusterDb_\nClusterDB * | <next_> next_\nCluster* | <hashTable_> hashTable_\nHashTable* | <bufferPool_> bufferPool_\nHashBuffer* | ... ",height=2.5];
+    Clustern [label = "<buckets_> buckets_ | <clusterDb_> clusterDb_\nClusterDB * | tempFile_\nHashScratchSpace | ... | <next_> next_\nCluster* | <hashTable_> hashTable_\nHashTable* | <bufferPool_> bufferPool_\nHashBuffer* | ...",height=2.5];
+  }
+
+  subgraph cluster_HashBuffers {
+    node [style=filled];
+    label = "HashBuffers";
+    HashBuffer1 [label = "<header_>cluster_\nCluster* | <next_> next_\nHashBuffer* | <prev_> prev_\nHashBuffer* | <currRow_> currRow_\nchar* | <data> data\nchar*| <cur>...", height=2.5];
+    HashBufferx [label = "<header_>cluster_\nCluster* | <next_> next_\nHashBuffer* | <prev_> prev_\nHashBuffer* | <currRow_> currRow_\nchar* | <data> data\nchar*| <cur>...", height=2.5]
+    HashBuffern [label = "<header_>cluster_\nCluster* | <next_> next_\nHashBuffer* | <prev_> prev_\nHashBuffer* | <currRow_> currRow_\nchar* | <data> data\nchar*| <cur>...", height=2.5];
+  }
+
+  ClusterDB:outerReadBuffers_ ->HashBuffer1:header_;
+  ClusterDB:buckets_ ->Buckets:header_;
+  ClusterDB:clusterList_ ->Cluster1:buckets_;
+
+  Buckets:header_ -> Bucket:header_ [style=dotted];
+  Buckets:header_ -> Bucket:ender_  [style=dotted];
+  Cluster1:next_ -> Clusterx:buckets_ [color=green];
+  Clusterx:next_ -> Clustern:buckets_ [color=green];
+
+  Cluster1:buckets_ -> Buckets:header_ [color=blue];
+  Clusterx:buckets_ -> Buckets:bucket4 [color=blue];
+  Clustern:buckets_ -> Buckets:bucketn3 [color=blue];
+
+  Cluster1:bufferPool_ -> HashBuffer1:header_ [color=red];
+  Clusterx:bufferPool_ -> HashBufferx:header_ [color=red];
+  Clustern:bufferPool_ -> HashBuffern:header_ [color=red];
+
+  HashBuffer1:currRow_ -> HashBuffer1:cur;
+  HashBufferx:currRow_ -> HashBufferx:cur;
+  HashBuffern:currRow_ -> HashBuffern:cur;
+
+  HashBuffer1:next_ -> HashBufferx:header_ [color=green];
+  HashBufferx:next_ -> HashBuffern:header_ [color=green];
+
+  HashBuffern:prev_ -> HashBufferx:header_ [color=red];
+  HashBufferx:prev_ -> HashBuffer1:header_ [color=red];
+}
